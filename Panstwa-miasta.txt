@@ -41,11 +41,11 @@ Harfistka,Hydraulik
 Indie,Indonezja,Irak,Iran,Izrael,Irlandia,Islandia
 Iława,Imelin,Inowrocław
 Iwo,Irwin,Ildefons,Ireneusz,Izaak,Igor,Ignacy,Iga,Ida,Ingrid,Irena,Iryda,Iwona,Iwetta
-Indyk,Iguana.
+Indyk,Iguana
 Internista,Inżynier,Inspektor,Introligator
 Jamajka,Japonia,Jemen,Jordania
 Jasło,Jarosławiec,Jawor,Jaworzno,Jastrowie,Jedlicze,Jastarnia,Jarocin,Jesień
-Jaromir,Janusz,Jakub,Jarsoław,Jeremiasz,Jonasz,Jerzy,Joachim,Julia,Julianna,Judyta,Julita,Joanna,Jowita,Jolanta
+Jaromir,Janusz,Jakub,Jarsoław,Jeremiasz,Jonasz,Jerzy,Joachim,Julia,Julianna,Judyta,Julita,Joanna,Jowita,Jolanta,Jan
 Jaguar,Jastrząb,Jak,Jaskółka,Jamnik.
 Jubiler,Juhas,Joker
 Kambodża,Kamerun,Kanada,Katar,Kazachstan,Kenia,Kuba,Kiribati,Komory,Kongo,KoreaPłd,KoreaPłn,Kostaryka,Kuwejt

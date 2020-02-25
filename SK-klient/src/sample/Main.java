@@ -7,6 +7,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
 import java.nio.charset.Charset;
 
 class GUI extends JFrame {
@@ -17,6 +18,17 @@ class GUI extends JFrame {
     JButton B1 ,B2;
 
     public GUI() {}
+
+    public void blokuj(){
+        B1.setEnabled(false);
+        B2.setEnabled(false);
+
+        T1.setEditable(false);
+        T2.setEditable(false);
+        T3.setEditable(false);
+        T4.setEditable(false);
+        T5.setEditable(false);
+    }
 
     public void nowaGra(){
         B2.setEnabled(true);
@@ -41,7 +53,6 @@ class GUI extends JFrame {
         L4.setText(null);
         L5.setText(null);
 
-        Twyniki.setVisible(false);
 
         B2.setText("Gotowy");
 
@@ -56,6 +67,9 @@ class GUI extends JFrame {
         Twyniki.setVisible(true);
     }
     public void wyswietlCzas (String s){
+        if(s.length()>12 && (s.substring(10,11).equals("p") || s.substring(11,12).equals("p"))){
+            B1.setEnabled(false);
+        }
         Tczas.setText(s);
     }
 
@@ -86,7 +100,7 @@ class GUI extends JFrame {
 
     }
     public void Menu(Socket sock){
-        menuFrame = new JFrame("JTPP");
+        menuFrame = new JFrame("SK2");
         menuFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         menuFrame.pack();
 
@@ -99,7 +113,7 @@ class GUI extends JFrame {
         int ScHeight = 2*screenSize.height/8;
         menuFrame.setSize(ScWidth,ScHeight);
         menuFrame.setLocationRelativeTo(null);
-        menuFrame.setResizable(false);
+        menuFrame.setResizable(true);
         menuFrame.setBackground(Color.white);
 
 
@@ -107,7 +121,7 @@ class GUI extends JFrame {
         Spring ySpring = Spring.constant(20,30, 40);
         Spring y2Spring = Spring.constant(5,5, 5);
 
-        JTextArea TT = new JTextArea("Państwa Miasta");
+        JTextArea TT = new JTextArea("Panstwa Miasta");
         TT.setFont(new Font("default", Font.ITALIC + Font.BOLD, 32));
         TT.setEditable(false);
 
@@ -116,7 +130,7 @@ class GUI extends JFrame {
         T1.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_TAB) {
+                if (e.getKeyCode() == KeyEvent.VK_TAB || e.getKeyCode() == KeyEvent.VK_ENTER) {
                     if (e.getModifiers() > 0) {
                         T1.transferFocusBackward();
                     } else {
@@ -143,7 +157,7 @@ class GUI extends JFrame {
         T2.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_TAB) {
+                if (e.getKeyCode() == KeyEvent.VK_TAB || e.getKeyCode() == KeyEvent.VK_ENTER) {
                     if (e.getModifiers() > 0) {
                         T2.transferFocusBackward();
                     } else {
@@ -168,7 +182,7 @@ class GUI extends JFrame {
         T3.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_TAB) {
+                if (e.getKeyCode() == KeyEvent.VK_TAB || e.getKeyCode() == KeyEvent.VK_ENTER) {
                     if (e.getModifiers() > 0) {
                         T3.transferFocusBackward();
                     } else {
@@ -193,7 +207,7 @@ class GUI extends JFrame {
         T4.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_TAB) {
+                if (e.getKeyCode() == KeyEvent.VK_TAB || e.getKeyCode() == KeyEvent.VK_ENTER) {
                     if (e.getModifiers() > 0) {
                         T4.transferFocusBackward();
                     } else {
@@ -218,7 +232,7 @@ class GUI extends JFrame {
         T5.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_TAB) {
+                if (e.getKeyCode() == KeyEvent.VK_TAB || e.getKeyCode() == KeyEvent.VK_ENTER) {
                     if (e.getModifiers() > 0) {
                         T5.transferFocusBackward();
                     } else {
@@ -240,8 +254,9 @@ class GUI extends JFrame {
             }
         });
 
-        B1 = new JButton("Wyślij");
+        B1 = new JButton("Wyslij");
         B2 = new JButton("Gotowy");
+
 
         B1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -251,17 +266,24 @@ class GUI extends JFrame {
                                     L4.getText()+T4.getText().toLowerCase()+
                                     L5.getText()+T5.getText().toLowerCase();
                 BufferedReader bufred = new BufferedReader(new StringReader(message));
-                try {
-                    sock.getOutputStream().write(bufred.readLine().getBytes());
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
                 B1.setEnabled(false);
                 T1.setEditable(false);
                 T2.setEditable(false);
                 T3.setEditable(false);
                 T4.setEditable(false);
                 T5.setEditable(false);
+                try {
+                    sock.getOutputStream().write(bufred.readLine().getBytes());
+                }catch (SocketException ex) {
+                    wyczyscWyniki();
+                    Twyniki.setText("Blad - Server Nieosiagalny.\nProsze zrestartowac gre.");
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                    wyczyscWyniki();
+                    Twyniki.setText("Wystąpil blad przy wysylaniu\nProsze sprobowac jeszcze raz,\nlub uruchomic ponownie gre");
+                    B1.setEnabled(true);
+                }
+
 
             }
         } );
@@ -278,8 +300,13 @@ class GUI extends JFrame {
                 BufferedReader bufred = new BufferedReader(new StringReader(message));
                 try {
                     sock.getOutputStream().write(bufred.readLine().getBytes());
+                }catch (SocketException ex) {
+                    wyczyscWyniki();
+                    Twyniki.setText("Blad - Server Nieosiagalny.\nProsze zrestartowac gre.");
                 } catch (IOException ex) {
                     ex.printStackTrace();
+                    wyczyscWyniki();
+                    Twyniki.setText("Wystąpil blad przy wysylaniu\nProsze sprobowac jeszcze raz,\nlub uruchomic ponownie gre");
                 }
             }
         } );
@@ -290,11 +317,11 @@ class GUI extends JFrame {
         L4 = new JTextArea();
         L5 = new JTextArea();
 
-        JTextArea N1 = new JTextArea("Państwo");
+        JTextArea N1 = new JTextArea("Panstwo");
         JTextArea N2 = new JTextArea("Miasto");
         JTextArea N3 = new JTextArea("Imie");
         JTextArea N4 = new JTextArea("Zwierze");
-        JTextArea N5 = new JTextArea("Zawód");
+        JTextArea N5 = new JTextArea("Zawod");
 
         Tczas = new JTextArea();
         Twyniki = new JTextArea();
@@ -327,8 +354,6 @@ class GUI extends JFrame {
         Tczas.setFocusable(false);
         Twyniki.setFocusable(false);
 
-        Twyniki.setVisible(false);
-
 
         N1.setBackground(Color.lightGray);
         N2.setBackground(Color.lightGray);
@@ -337,8 +362,11 @@ class GUI extends JFrame {
         N5.setBackground(Color.lightGray);
         menuFrame.setBackground(Color.lightGray);
 
-        Twyniki.setPreferredSize(new Dimension(ScWidth/8,ScWidth/16));
-        Tczas.setColumns(7);
+        Twyniki.setPreferredSize(new Dimension(ScWidth/3,ScWidth/16));
+        Twyniki.setText("Nacisnij "+'"'+"Gotowy"+ '"'+" aby zadeklarowac gotowosc");
+
+        Tczas.setFont(new Font("default", Font.BOLD, 12));
+        Tczas.setColumns(16);
         T1.setColumns(10);
         T2.setColumns(10);
         T3.setColumns(10);
@@ -358,6 +386,7 @@ class GUI extends JFrame {
         Twyniki.setLineWrap(true);
 
         B1.setEnabled(false);
+        B2.setEnabled(false);
         T1.setEditable(false);
         T2.setEditable(false);
         T3.setEditable(false);
@@ -380,15 +409,15 @@ class GUI extends JFrame {
         layout.putConstraint(SpringLayout.NORTH, L4, ySpring,SpringLayout.SOUTH,TT);
         layout.putConstraint(SpringLayout.NORTH, L5, ySpring,SpringLayout.SOUTH,TT);
 
-        layout.putConstraint(SpringLayout.WEST, T1,Spring.constant(-4),SpringLayout.EAST,L1);
+        layout.putConstraint(SpringLayout.WEST, T1,Spring.constant(-2),SpringLayout.EAST,L1);
         layout.putConstraint(SpringLayout.WEST, L2,Spring.constant(ScWidth/20),SpringLayout.EAST,T1);
-        layout.putConstraint(SpringLayout.WEST, T2,Spring.constant(-4),SpringLayout.EAST,L2);
+        layout.putConstraint(SpringLayout.WEST, T2,Spring.constant(-2),SpringLayout.EAST,L2);
         layout.putConstraint(SpringLayout.WEST, L3,Spring.constant(ScWidth/20),SpringLayout.EAST,T2);
-        layout.putConstraint(SpringLayout.WEST, T3,Spring.constant(-4),SpringLayout.EAST,L3);
+        layout.putConstraint(SpringLayout.WEST, T3,Spring.constant(-2),SpringLayout.EAST,L3);
         layout.putConstraint(SpringLayout.WEST, L4,Spring.constant(ScWidth/20),SpringLayout.EAST,T3);
-        layout.putConstraint(SpringLayout.WEST, T4,Spring.constant(-4),SpringLayout.EAST,L4);
+        layout.putConstraint(SpringLayout.WEST, T4,Spring.constant(-2),SpringLayout.EAST,L4);
         layout.putConstraint(SpringLayout.WEST, L5,Spring.constant(ScWidth/20),SpringLayout.EAST,T4);
-        layout.putConstraint(SpringLayout.WEST, T5,Spring.constant(-4),SpringLayout.EAST,L5);
+        layout.putConstraint(SpringLayout.WEST, T5,Spring.constant(-2),SpringLayout.EAST,L5);
 
         layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, N1,Spring.constant(0),SpringLayout.HORIZONTAL_CENTER,T1);
         layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, N2,Spring.constant(0),SpringLayout.HORIZONTAL_CENTER,T2);
@@ -449,10 +478,30 @@ public class Main{
 
     public static void main(String[] args) {
         Socket sock = null;
-        Socket sock2 = null;
+        File file = new File("src/sample/addres.txt");
+
+        BufferedReader br = null;
         try {
-            sock = new Socket("127.0.0.1",1234);
-            sock2 = new Socket("127.0.0.1",1234);
+            br = new BufferedReader(new FileReader(file));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        String host = null;
+        try {
+            host = br.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        int port = 0;
+        try {
+            port = Integer.parseInt(br.readLine());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            sock = new Socket(host,port);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -460,7 +509,6 @@ public class Main{
         InputStream is = null;
         try {
             is = sock.getInputStream();
-            is = sock2.getInputStream();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -469,25 +517,33 @@ public class Main{
 
         GUI g = new GUI();
         g.Menu(sock);
-        GUI h = new GUI();
-        h.Menu(sock2);
         while(true){
             int len = 0;
             try {
                 len = is.read(bytearr);
             } catch (IOException e) {
                 e.printStackTrace();
+                g.wyczyscWyniki();
+                g.Twyniki.setText("Blad przy pobieraniu danych");
             }
             if(len == -1) break;
-            //System.out.write(bytearr, 0, len);
             String s = new String(bytearr, 0, len, Charset.forName("US-ASCII"));
             String s2="";
-            //System.out.println(s);
             boolean erase = true;
             while(s.length()>0) {
+                if(s.length()>=255){
+                    BufferedReader bufred = new BufferedReader(new StringReader("."));
+
+                    try {
+                        sock.getOutputStream().write(bufred.readLine().getBytes());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+
+                }
                 if (Character.isLowerCase(s.charAt(0)) == true) {
                     g.zmianaLitery(s.charAt(0));
-                    h.zmianaLitery(s.charAt(0));
                     s = s.substring(1, s.length());
                 }
                 if(s.length() == 0) break;
@@ -497,20 +553,26 @@ public class Main{
                     s2 = s.substring(0,i);
                     s = s.substring(i,s.length());
                 }
+                if(s2.length() == 0) break;
                 if (s2.substring(0, 1).equals("C")||s2.substring(0, 1).equals("S")) {
                     g.wyswietlCzas(s2);
-                    h.wyswietlCzas(s2);
-                } else if (s2.substring(0, 1).equals("G")){
+                } else if ( s2.substring(0, 1).equals("G")||
+                            s2.substring(0, 1).equals("T")||
+                            s2.substring(0, 1).equals("P")||
+                            s2.substring(0, 1).equals("B")){
                     if(erase == true){
                         g.wyczyscWyniki();
-                        h.wyczyscWyniki();
                         erase = false;
                     }
+                    if(s2.substring(0, 1).equals("B")) {
+                        g.blokuj();
+                    }
                     g.wyswietlWyniki(s2);
-                    h.wyswietlWyniki(s2);
+                    if(s2.length()>10){
+                        erase=true;
+                    }
                 }else if(s2.substring(0, 1).equals("N")){
                     g.nowaGra();
-                    h.nowaGra();
                 }
             }
         }
