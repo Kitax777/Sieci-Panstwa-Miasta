@@ -8,7 +8,6 @@
 (Uruchomiono server)
 
 3) W środowisku Java otworzyć projekt z pliku SK-klient i uruchomić.
-(pokażą się dwa okna klientów jeden nad drugim)
 
 4) Grać
 
